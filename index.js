@@ -2,7 +2,7 @@ const fastify = require("fastify")({
   logger: { level: "error" },
   trustProxy: true,
 })
-const PORT = process.env.PORT || 3000
+const PORT = process.env.PORT || 3069
 fastify.register(require("@fastify/cors"))
 
 fastify.get("/", function (req, reply) {
@@ -26,7 +26,7 @@ const start = async () => {
       host: "0.0.0.0",
       port: PORT,
     })
-    console.log("Server listening on http://localhost:3000")
+    console.log("Server listening on http://localhost:" + PORT)
   } catch (err) {
     fastify.log.error(err)
     process.exit(1)
