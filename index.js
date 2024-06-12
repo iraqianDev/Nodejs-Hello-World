@@ -1,6 +1,6 @@
 import express from "express"
 const app = express()
-const port = 3001
+const port = 3069
 
 // Middleware to parse JSON bodies
 app.use(express.json())
