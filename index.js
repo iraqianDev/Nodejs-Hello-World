@@ -1,44 +1,35 @@
-const express = require("express")
-const helmet = require("helmet")
-const compression = require("compression")
-const morgan = require("morgan")
-const winston = require("winston")
+const fastify = require("fastify")({
+  logger: { level: "error" },
+  trustProxy: true,
+})
+const PORT = process.env.PORT || 3000
+fastify.register(require("@fastify/cors"))
 
-const app = express()
-const port = process.env.PORT || 3069
-
-// Middleware to parse JSON bodies
-app.use(express.json())
-
-// Security middleware
-app.use(helmet())
-
-// Compression middleware
-app.use(compression())
-
-// Logging middleware
-app.use(morgan("combined", { stream: winston.stream.write }))
-
-// Define a simple route
-app.get("/", (req, res) => {
-  res.send("Hello World!")
+fastify.get("/", function (req, reply) {
+  return { hello: "from nodejs" }
+})
+fastify.get("/env", function (req, reply) {
+  return { env: process.env }
+})
+fastify.get("/env/:env", function (req, reply) {
+  const env = req.params.env
+  return { env: process.env[env] }
 })
 
-// Define another route
-app.get("/api", (req, res) => {
-  res.json({ message: "Welcome to the API" })
+fastify.get("/health", function (req, reply) {
+  return "OK"
 })
 
-// New route to handle POST request
-app.post("/api/data", (req, res) => {
-  const data = req.body
-  res.json({
-    message: "Data received",
-    data: data,
-  })
-})
-
-// Start the server
-app.listen(port, () => {
-  console.log(`Server is running on http://localhost:${port}`)
-})
+const start = async () => {
+  try {
+    await fastify.listen({
+      host: "0.0.0.0",
+      port: PORT,
+    })
+    console.log("Server listening on http://localhost:3000")
+  } catch (err) {
+    fastify.log.error(err)
+    process.exit(1)
+  }
+}
+start()
